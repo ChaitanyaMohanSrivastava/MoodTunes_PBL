@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoodTunes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-purple-600 via-indigo-700 to-blue-900 min-h-screen text-white font-sans">
+
+    <!-- Header -->
+    <header class="text-center py-12">
+        <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-red-500 drop-shadow-md">MoodTunes</h1>
+        <p class="text-lg mt-4 text-white/80">Upload a photo — get music that fits your mood</p>
+        <a href="{{ url_for('about') }}" class="mt-6 inline-block px-5 py-2 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-full font-semibold transition-all">About MoodTunes</a>
+    </header>
+
+    <!-- Upload Box -->
+    <main class="max-w-2xl mx-auto px-6">
+        <form action="/recommend" method="post" enctype="multipart/form-data" class="bg-white bg-opacity-10 backdrop-blur-xl rounded-2xl shadow-2xl p-10 hover:shadow-pink-500/20 transition-all duration-300">
+            <label for="file" class="flex flex-col items-center cursor-pointer text-center">
+                <img src="https://img.icons8.com/ios-filled/50/ffffff/upload-to-cloud.png" id="upload-icon" class="w-20 h-20 p-4 border-2 border-dashed border-white rounded-full shadow-md mb-4 transition-all" alt="Upload">
+                <p class="text-lg">Drag & drop or <u>browse</u> your image</p>
+                <p class="text-sm mt-1 text-white/70">Accepted: JPG, PNG, GIF (Max 10MB)</p>
+                <div id="fileInfo" class="text-sm text-white/70 mt-2 hidden"></div>
+                <input type="file" id="file" name="file" accept="image/*" class="hidden">
+            </label>
+            <img id="imagePreview" class="hidden mx-auto mt-6 max-h-52 rounded-xl shadow-lg border-2 border-white object-cover">
+            <button id="getMusic" disabled type="submit" class="mt-6 w-full py-3 bg-gradient-to-r from-pink-500 to-yellow-400 text-white font-semibold rounded-full shadow-lg hover:-translate-y-1 hover:shadow-xl transition-all disabled:bg-gray-500 disabled:cursor-not-allowed">🎵 Get Music Recommendations</button>
+        </form>
+    </main>
+
+    <!-- Features Section -->
+    <section class="mt-20 flex flex-wrap justify-center gap-6 px-6">
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 w-72 shadow-lg transition-all hover:-translate-y-1">
+            <h3 class="text-2xl font-bold mb-3">Emotion Detection</h3>
+            <p class="text-white/80">AI analyzes your uploaded photo for emotional cues.</p>
+        </div>
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 w-72 shadow-lg transition-all hover:-translate-y-1">
+            <h3 class="text-2xl font-bold mb-3">Mood-Based Songs</h3>
+            <p class="text-white/80">Get a curated list of tracks matching your vibe.</p>
+        </div>
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-xl p-6 w-72 shadow-lg transition-all hover:-translate-y-1">
+            <h3 class="text-2xl font-bold mb-3">Instant Playback</h3>
+            <p class="text-white/80">No waiting — recommendations appear instantly.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-24 text-center py-8 text-white/60">
+        <p>&copy; 2025 <span class="text-pink-400 font-semibold">MoodTunes</span>. All rights reserved.</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        const fileInput = document.getElementById('file');
+        const imagePreview = document.getElementById('imagePreview');
+        const getMusicBtn = document.getElementById('getMusic');
+        const fileInfo = document.getElementById('fileInfo');
+        const uploadBox = document.querySelector('label');
+
+        fileInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                fileInfo.classList.remove('hidden');
+                fileInfo.innerHTML = `<strong>${file.name}</strong><br>${(file.size / 1024 / 1024).toFixed(2)} MB`;
+
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.classList.remove('hidden');
+                    getMusicBtn.disabled = false;
+                    document.getElementById('upload-icon').style.display = 'none';
+                    uploadBox.querySelector('p:nth-of-type(1)').style.display = 'none';
+                    uploadBox.querySelector('p:nth-of-type(2)').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        uploadBox.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadBox.classList.add('bg-opacity-20', 'border-white');
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.classList.remove('bg-opacity-20', 'border-white');
+        });
+
+        uploadBox.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadBox.classList.remove('bg-opacity-20', 'border-white');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
+</body>
+</html>

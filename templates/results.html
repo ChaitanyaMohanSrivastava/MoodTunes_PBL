@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Music Recommendations | MoodTunes</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --secondary: #1e293b;
+      --accent: #38bdf8;
+      --accent-secondary: #a78bfa;
+      --text: #f1f5f9;
+      --text-secondary: rgba(241, 245, 249, 0.7);
+      --card-bg: rgba(255, 255, 255, 0.05);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(to right, var(--accent), var(--accent-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .results-container {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 2rem;
+    }
+
+    .emotion-display {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .emotion-text {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .emotion-value {
+      display: inline-block;
+      padding: 0.5rem 1.5rem;
+      background: linear-gradient(45deg, var(--accent), var(--accent-secondary));
+      border-radius: 50px;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.5);
+      text-transform: capitalize;
+    }
+
+    .songs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .song-card {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: var(--card-bg);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .song-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--accent), var(--accent-secondary));
+      transition: width 0.3s ease;
+    }
+
+    .song-card:hover {
+      transform: translateX(5px);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .song-card:hover::before {
+      width: 6px;
+    }
+
+    .song-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-right: 1rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .song-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .song-info {
+      flex-grow: 1;
+    }
+
+    .song-name {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      font-size: 1.1rem;
+    }
+
+    .song-artist {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .play-icon {
+      margin-left: 1rem;
+      opacity: 0;
+      transition: all 0.3s ease;
+      color: var(--accent);
+    }
+
+    .song-card:hover .play-icon {
+      opacity: 1;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .home-button {
+      padding: 0.8rem 2rem;
+      background: linear-gradient(45deg, var(--accent), var(--accent-secondary));
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .home-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.5);
+    }
+
+    .home-button:active {
+      transform: translateY(0);
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .footer-mark {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .footer-mark:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .results-container {
+        padding: 1.5rem;
+      }
+
+      .song-card {
+        padding: 0.8rem;
+      }
+
+      .song-image {
+        width: 50px;
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">MoodTunes</div>
+      <p>Music tailored to your emotions</p>
+    </div>
+
+    <div class="results-container">
+      <div class="emotion-display">
+        <div class="emotion-text">We detected you're feeling</div>
+        <div class="emotion-value" id="emotion">{{ emotion }}</div>
+      </div>
+
+      <div class="songs-list">
+        {% for song in songs %}
+        <a href="{{ song.url }}" target="_blank" class="song-card">
+          <div class="song-image">
+            <img src="{{ song.image_url }}" alt="{{ song.name }} cover" />
+          </div>
+          <div class="song-info">
+            <div class="song-name">{{ song.name }}</div>
+            <div class="song-artist">{{ song.artist }}</div>
+          </div>
+          <div class="play-icon">▶ Play</div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="/" class="home-button">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+             viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+                d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+        Analyze Another Image
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 <a href="#" class="footer-mark">MoodifyAI</a>. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const emotionElement = document.getElementById('emotion');
+    if (emotionElement) {
+      emotionElement.style.opacity = '0';
+      emotionElement.style.transform = 'translateY(20px)';
+
+      setTimeout(() => {
+        emotionElement.style.transition = 'all 0.5s ease-out';
+        emotionElement.style.opacity = '1';
+        emotionElement.style.transform = 'translateY(0)';
+      }, 300);
+    }
+
+    const songCards = document.querySelectorAll('.song-card');
+    songCards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        const icon = card.querySelector('.play-icon');
+        if (icon) {
+          icon.style.transform = 'translateX(0)';
+        }
+      });
+
+      card.addEventListener('mouseleave', () => {
+        const icon = card.querySelector('.play-icon');
+        if (icon) {
+          icon.style.transform = 'translateX(10px)';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
